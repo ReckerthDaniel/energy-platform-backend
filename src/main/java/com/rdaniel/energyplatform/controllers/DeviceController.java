@@ -25,7 +25,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @CrossOrigin
-@RequestMapping(value = "/api/device")
+@RequestMapping("api/device")
 @RequiredArgsConstructor
 @Api(tags = SwaggerConfig.DEVICE_TAG)
 public class DeviceController {
@@ -55,7 +55,7 @@ public class DeviceController {
             @ApiResponse(code = 404, message = "Could not find any device with id: {id given as path variable}"),
             @ApiResponse(code = 400, message = "Getting device with given id failed.")
     })
-    @GetMapping(value = "/{id}")
+    @GetMapping("{id}")
     public ResponseEntity<DeviceDetailsDTO> getDevice(@PathVariable("id") UUID deviceId) {
         DeviceDetailsDTO dto = deviceService.findDeviceById(deviceId);
         return new ResponseEntity<>(dto, HttpStatus.OK);
@@ -67,7 +67,7 @@ public class DeviceController {
             @ApiResponse(code = 404, message = "The device is not valid."),
             @ApiResponse(code = 400, message = "Inserting a new device failed.")
     })
-    @PostMapping("/save")
+    @PostMapping("save")
     public ResponseEntity<UUID> insertDevice(@Valid @RequestBody DeviceDetailsDTO deviceDetailsDTO) {
         UUID deviceId = deviceService.insert(deviceDetailsDTO);
         return new ResponseEntity<>(deviceId, HttpStatus.CREATED);
@@ -79,7 +79,7 @@ public class DeviceController {
             @ApiResponse(code = 404, message = "Could not find any device with id: {id given as path variable}"),
             @ApiResponse(code = 400, message = "Updating device with given id failed.")
     })
-    @PutMapping("/update/{id}")
+    @PutMapping("update/{id}")
     public ResponseEntity<DeviceDetailsDTO> updateDevice(@PathVariable("id") UUID deviceId, @Valid @RequestBody DeviceDetailsDTO deviceDetailsDTO) {
         DeviceDetailsDTO updated = deviceService.update(deviceId, deviceDetailsDTO);
         return new ResponseEntity<>(updated, HttpStatus.OK);
@@ -91,7 +91,7 @@ public class DeviceController {
             @ApiResponse(code = 404, message = "Could not find any device with id: {id given as path variable}"),
             @ApiResponse(code = 400, message = "Deleting device with given id failed.")
     })
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("delete/{id}")
     public ResponseEntity<?> deleteDevice(@PathVariable("id") UUID deviceId) {
         deviceService.delete(deviceId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);

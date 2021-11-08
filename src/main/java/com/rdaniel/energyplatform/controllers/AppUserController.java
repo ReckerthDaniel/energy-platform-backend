@@ -23,7 +23,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @CrossOrigin
-@RequestMapping(value = "/api")
+@RequestMapping("api")
 @RequiredArgsConstructor
 @Slf4j
 @Api(tags = SwaggerConfig.APP_USER_TAG)
@@ -37,7 +37,7 @@ public class AppUserController {
             @ApiResponse(code = 404, message = "Could not find any user."),
             @ApiResponse(code = 400, message = "Getting all users failed.")
     })
-    @GetMapping("/user")
+    @GetMapping("public/user")
     public ResponseEntity<List<AppUserDTO>> getAppUsers() {
         List<AppUserDTO> dtos = appUserService.findAppUsers();
         for(AppUserDTO dto : dtos) {
@@ -54,7 +54,7 @@ public class AppUserController {
             @ApiResponse(code = 404, message = "Could not find any user with id: {id given as path variable}"),
             @ApiResponse(code = 400, message = "Getting user with given id failed.")
     })
-    @GetMapping(value = "/user/{id}")
+    @GetMapping(value = "public/user/{id}")
     public ResponseEntity<AppUserDetailsDTO> getAppUser(@PathVariable("id") UUID userId) {
         AppUserDetailsDTO dto = appUserService.findAppUserById(userId);
         return new ResponseEntity<>(dto, HttpStatus.OK);
@@ -66,7 +66,7 @@ public class AppUserController {
             @ApiResponse(code = 404, message = "The user is not valid."),
             @ApiResponse(code = 400, message = "Inserting a new user failed.")
     })
-    @PostMapping("/user/save")
+    @PostMapping("user/save")
     public ResponseEntity<UUID> insertAppUser(@Valid @RequestBody AppUserDetailsDTO appUserDetailsDTO) {
         UUID userId = appUserService.insert(appUserDetailsDTO);
         return new ResponseEntity<>(userId, HttpStatus.CREATED);
@@ -78,7 +78,7 @@ public class AppUserController {
             @ApiResponse(code = 404, message = "Could not find any user with id: {id given as path variable}"),
             @ApiResponse(code = 400, message = "Updating user with given id failed.")
     })
-    @PutMapping("/user/update/{id}")
+    @PutMapping("user/update/{id}")
     public ResponseEntity<AppUserDetailsDTO> updateAppUser(@PathVariable("id") UUID userId, @Valid @RequestBody AppUserDetailsDTO appUserDetailsDTO) {
         AppUserDetailsDTO updated = appUserService.update(userId, appUserDetailsDTO);
         return new ResponseEntity<>(updated, HttpStatus.OK);
@@ -90,7 +90,7 @@ public class AppUserController {
             @ApiResponse(code = 404, message = "Could not find any user with id: {id given as path variable}"),
             @ApiResponse(code = 400, message = "Deleting user with given id failed.")
     })
-    @DeleteMapping("/user/delete/{id}")
+    @DeleteMapping("user/delete/{id}")
     public ResponseEntity<?> deleteAppUser(@PathVariable("id") UUID userId) {
         appUserService.delete(userId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);

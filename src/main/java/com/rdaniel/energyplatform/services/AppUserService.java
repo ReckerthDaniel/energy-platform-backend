@@ -8,6 +8,8 @@ import com.rdaniel.energyplatform.entities.AppUser;
 import com.rdaniel.energyplatform.repositories.AppUserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -19,6 +21,7 @@ import java.util.stream.Collectors;
 public class AppUserService {
 
     private final AppUserRepository appUserRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public List<AppUserDTO> findAppUsers() {
         List<AppUser> users = appUserRepository.findAll();
@@ -47,6 +50,7 @@ public class AppUserService {
 
     public UUID insert(AppUserDetailsDTO appUserDetailsDTO) {
         AppUser user = AppUserBuilder.toEntity(appUserDetailsDTO);
+        user.setPassword(passwordEncoder.encode(appUserDetailsDTO.getPassword()));
         user = appUserRepository.save(user);
         log.debug("User with id {} was inserted in DB", user.getId());
         return user.getId();

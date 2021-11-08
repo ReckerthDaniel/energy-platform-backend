@@ -2,8 +2,8 @@ package com.rdaniel.energyplatform.entities.enums;
 
 public enum Role {
 
-    ADMIN("ROLE_ADMIN"),
-    CLIENT("ROLE_CLIENT");
+    ADMIN("Admin"),
+    CLIENT("Client");
 
     private final String label;
 

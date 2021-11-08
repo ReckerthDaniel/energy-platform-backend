@@ -23,7 +23,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @CrossOrigin
-@RequestMapping(value = "/api/measurement")
+@RequestMapping("api/measurement")
 @RequiredArgsConstructor
 @Api(tags = SwaggerConfig.MEASUREMENT_TAG)
 public class MeasurementController {
@@ -53,7 +53,7 @@ public class MeasurementController {
             @ApiResponse(code = 404, message = "Could not find any measurement with id: {id given as path variable}"),
             @ApiResponse(code = 400, message = "Getting measurement with given id failed.")
     })
-    @GetMapping(value = "/{id}")
+    @GetMapping( "{id}")
     public ResponseEntity<MeasurementDTO> getMeasurement(@PathVariable("id") UUID measurementId) {
         MeasurementDTO dto = measurementService.findMeasurementById(measurementId);
         return new ResponseEntity<>(dto, HttpStatus.OK);
@@ -65,7 +65,7 @@ public class MeasurementController {
             @ApiResponse(code = 404, message = "The measurement is not valid."),
             @ApiResponse(code = 400, message = "Inserting a new measurement failed.")
     })
-    @PostMapping("/save")
+    @PostMapping("save")
     public ResponseEntity<UUID> insertMeasurement(@Valid @RequestBody MeasurementDTO measurementDTO) {
         UUID measurementId = measurementService.insert(measurementDTO);
         return new ResponseEntity<>(measurementId, HttpStatus.CREATED);
@@ -77,7 +77,7 @@ public class MeasurementController {
             @ApiResponse(code = 404, message = "Could not find any measurement with id: {id given as path variable}"),
             @ApiResponse(code = 400, message = "Updating measurement with given id failed.")
     })
-    @PutMapping("/update/{id}")
+    @PutMapping("update/{id}")
     public ResponseEntity<MeasurementDTO> updateDevice(@PathVariable("id") UUID measurementId, @Valid @RequestBody MeasurementDTO measurementDTO) {
         MeasurementDTO updated = measurementService.update(measurementId, measurementDTO);
         return new ResponseEntity<>(updated, HttpStatus.OK);
@@ -89,7 +89,7 @@ public class MeasurementController {
             @ApiResponse(code = 404, message = "Could not find any measurement with id: {id given as path variable}"),
             @ApiResponse(code = 400, message = "Deleting measurement with given id failed.")
     })
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("delete/{id}")
     public ResponseEntity<?> deleteDevice(@PathVariable("id") UUID measurementId) {
         measurementService.delete(measurementId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
