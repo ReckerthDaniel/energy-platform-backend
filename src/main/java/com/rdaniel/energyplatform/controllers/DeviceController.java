@@ -4,6 +4,7 @@ package com.rdaniel.energyplatform.controllers;
 import com.rdaniel.energyplatform.common.config.SwaggerConfig;
 import com.rdaniel.energyplatform.dtos.DeviceDTO;
 import com.rdaniel.energyplatform.dtos.DeviceDetailsDTO;
+import com.rdaniel.energyplatform.dtos.MeasurementDTO;
 import com.rdaniel.energyplatform.entities.Device;
 import com.rdaniel.energyplatform.services.DeviceService;
 import io.swagger.annotations.Api;
@@ -14,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -23,8 +25,8 @@ import java.util.UUID;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
+@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
-@CrossOrigin
 @RequestMapping(value = "/api/device")
 @RequiredArgsConstructor
 @Api(tags = SwaggerConfig.DEVICE_TAG)
@@ -39,9 +41,10 @@ public class DeviceController {
             @ApiResponse(code = 400, message = "Getting all devices failed.")
     })
     @GetMapping()
-    public ResponseEntity<List<DeviceDTO>> getDevices() {
-        List<DeviceDTO> dtos = deviceService.findDevices();
-        for(DeviceDTO dto : dtos) {
+    @PreAuthorize("hasRole('CLIENT') or hasRole('ADMIN')")
+    public ResponseEntity<List<DeviceDetailsDTO>> getDevices() {
+        List<DeviceDetailsDTO> dtos = deviceService.findDevices();
+        for(DeviceDetailsDTO dto : dtos) {
             Link userLink = linkTo(methodOn(DeviceController.class)
                     .getDevice(dto.getId())).withRel("deviceDetails");
             dto.add(userLink);
@@ -56,6 +59,7 @@ public class DeviceController {
             @ApiResponse(code = 400, message = "Getting device with given id failed.")
     })
     @GetMapping(value = "/{id}")
+    @PreAuthorize("hasRole('CLIENT') or hasRole('ADMIN')")
     public ResponseEntity<DeviceDetailsDTO> getDevice(@PathVariable("id") UUID deviceId) {
         DeviceDetailsDTO dto = deviceService.findDeviceById(deviceId);
         return new ResponseEntity<>(dto, HttpStatus.OK);
@@ -67,7 +71,8 @@ public class DeviceController {
             @ApiResponse(code = 404, message = "The device is not valid."),
             @ApiResponse(code = 400, message = "Inserting a new device failed.")
     })
-    @PostMapping("/save")
+    @PostMapping()
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UUID> insertDevice(@Valid @RequestBody DeviceDetailsDTO deviceDetailsDTO) {
         UUID deviceId = deviceService.insert(deviceDetailsDTO);
         return new ResponseEntity<>(deviceId, HttpStatus.CREATED);
@@ -79,7 +84,8 @@ public class DeviceController {
             @ApiResponse(code = 404, message = "Could not find any device with id: {id given as path variable}"),
             @ApiResponse(code = 400, message = "Updating device with given id failed.")
     })
-    @PutMapping("/update/{id}")
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<DeviceDetailsDTO> updateDevice(@PathVariable("id") UUID deviceId, @Valid @RequestBody DeviceDetailsDTO deviceDetailsDTO) {
         DeviceDetailsDTO updated = deviceService.update(deviceId, deviceDetailsDTO);
         return new ResponseEntity<>(updated, HttpStatus.OK);
@@ -91,9 +97,22 @@ public class DeviceController {
             @ApiResponse(code = 404, message = "Could not find any device with id: {id given as path variable}"),
             @ApiResponse(code = 400, message = "Deleting device with given id failed.")
     })
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> deleteDevice(@PathVariable("id") UUID deviceId) {
         deviceService.delete(deviceId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @GetMapping("/measurements/{id}")
+    @PreAuthorize("hasRole('CLIENT')")
+    public ResponseEntity<List<MeasurementDTO>> findDeviceMeasurement(@PathVariable("id") UUID id) {
+        List<MeasurementDTO> dtos = deviceService.findDeviceMeasurements(id);
+        for(MeasurementDTO dto : dtos) {
+            Link userLink = linkTo(methodOn(AppUserController.class)
+                    .getAppUser(dto.getId())).withRel("appUserDetails");
+            dto.add(userLink);
+        }
+        return new ResponseEntity<>(dtos, HttpStatus.OK);
     }
 }

@@ -9,9 +9,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -65,5 +66,24 @@ public class MeasurementService {
             throw new ResourceNotFoundException(Measurement.class.getSimpleName() + "with id: " + id);
         }
         measurementRepository.deleteById(id);
+    }
+
+    public List<MeasurementDTO> findMeasurementsByTimestamp(Date givenDate) throws ParseException {
+        Calendar calendar1 = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        Calendar calendar2 = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        calendar1.setTime(givenDate);
+
+        List<Measurement> measurements = measurementRepository.findAll();
+        List<MeasurementDTO> measurementDTOS = new ArrayList<>();
+        for(Measurement measurement: measurements) {
+            calendar2.setTime(measurement.getTimestamp());
+            if((calendar2.get(Calendar.YEAR) == calendar1.get(Calendar.YEAR)) && (calendar2.get(Calendar.DAY_OF_YEAR) == calendar1.get(Calendar.DAY_OF_YEAR))) {
+                measurementDTOS.add(MeasurementBuilder.toMeasurementDTO(measurement));
+            }
+        }
+
+        measurementDTOS.sort(Comparator.comparing(MeasurementDTO::getTimestamp));
+
+        return measurementDTOS;
     }
 }

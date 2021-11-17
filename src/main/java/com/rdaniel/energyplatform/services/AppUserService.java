@@ -3,9 +3,13 @@ package com.rdaniel.energyplatform.services;
 import com.rdaniel.energyplatform.common.handlers.exceptions.model.ResourceNotFoundException;
 import com.rdaniel.energyplatform.dtos.AppUserDTO;
 import com.rdaniel.energyplatform.dtos.AppUserDetailsDTO;
+import com.rdaniel.energyplatform.dtos.DeviceDetailsDTO;
 import com.rdaniel.energyplatform.dtos.builders.AppUserBuilder;
+import com.rdaniel.energyplatform.dtos.builders.DeviceBuilder;
 import com.rdaniel.energyplatform.entities.AppUser;
+import com.rdaniel.energyplatform.entities.Device;
 import com.rdaniel.energyplatform.repositories.AppUserRepository;
+import com.rdaniel.energyplatform.repositories.DeviceRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -19,11 +23,12 @@ import java.util.stream.Collectors;
 public class AppUserService {
 
     private final AppUserRepository appUserRepository;
+    private final DeviceRepository deviceRepository;
 
-    public List<AppUserDTO> findAppUsers() {
+    public List<AppUserDetailsDTO> findAppUsers() {
         List<AppUser> users = appUserRepository.findAll();
         return users.stream()
-                .map(AppUserBuilder::toAppUserDTO)
+                .map(AppUserBuilder::toAppUserDetailsDTO)
                 .collect(Collectors.toList());
     }
 
@@ -76,5 +81,26 @@ public class AppUserService {
             throw new ResourceNotFoundException(AppUser.class.getSimpleName() + "with id: " + id);
         }
         appUserRepository.deleteById(id);
+    }
+
+    public List<DeviceDetailsDTO> findAppUserDevices(UUID id) {
+        Optional<AppUser> userOptional = appUserRepository.findById(id);
+        if(userOptional.isEmpty()) {
+            log.error("User with id {} not found in DB.", id);
+            throw new ResourceNotFoundException(AppUser.class.getSimpleName() + "with id: " + id);
+        }
+        AppUser user = userOptional.get();
+
+        List<Device> devices = deviceRepository.findAll();
+        List<Device> userDevices = new ArrayList<>();
+        for(Device device: devices) {
+            if(device.getUser().equals(user)) {
+                userDevices.add(device);
+            }
+        }
+
+        return userDevices.stream()
+                .map(DeviceBuilder::toDeviceDetailsDTO)
+                .collect(Collectors.toList());
     }
 }

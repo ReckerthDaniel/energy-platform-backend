@@ -1,38 +1,57 @@
 package com.rdaniel.energyplatform.common.security;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.rdaniel.energyplatform.entities.AppUser;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 public class AppUserPrincipal implements UserDetails {
-    private final AppUser appUser;
 
-    public AppUserPrincipal(AppUser appUser) {
-        this.appUser = appUser;
+    private static final long serialVersionUID = 1L;
+
+    private UUID id;
+
+    private String username;
+
+    @JsonIgnore
+    private String password;
+
+    private Collection<? extends GrantedAuthority> authorities;
+
+    public AppUserPrincipal(UUID id, String username, String password, Collection<? extends GrantedAuthority> authorities) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+        this.authorities = authorities;
     }
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
+    public static AppUserPrincipal build(AppUser user) {
         List<GrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority(user.getRole().getLabel()));
 
-        authorities.add(new SimpleGrantedAuthority(appUser.getRole().getLabel()));
-
-        return authorities;
+        return new AppUserPrincipal(user.getId(), user.getUsername(), user.getPassword(), authorities);
     }
 
-    @Override
-    public String getPassword() {
-        return this.appUser.getPassword();
+    public UUID getId() {
+        return id;
     }
 
     @Override
     public String getUsername() {
-        return this.appUser.getUsername();
+        return username;
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return authorities;
     }
 
     @Override
@@ -54,4 +73,13 @@ public class AppUserPrincipal implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AppUserPrincipal that = (AppUserPrincipal) o;
+        return Objects.equals(id, that.id);
+    }
+
 }

@@ -1,30 +1,41 @@
 package com.rdaniel.energyplatform.controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rdaniel.energyplatform.common.config.SwaggerConfig;
 import com.rdaniel.energyplatform.dtos.MeasurementDTO;
+import com.rdaniel.energyplatform.dtos.MeasurementInDTO;
 import com.rdaniel.energyplatform.entities.Measurement;
 import com.rdaniel.energyplatform.services.MeasurementService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import javassist.Loader;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
-@CrossOrigin
-@RequestMapping(value = "/api/measurement")
+@RequestMapping(value = "/api")
 @RequiredArgsConstructor
+@Slf4j
 @Api(tags = SwaggerConfig.MEASUREMENT_TAG)
 public class MeasurementController {
 
@@ -36,7 +47,8 @@ public class MeasurementController {
             @ApiResponse(code = 404, message = "Could not find any measurement."),
             @ApiResponse(code = 400, message = "Getting all measurements failed.")
     })
-    @GetMapping()
+    @GetMapping("/measurement")
+    @PreAuthorize("hasRole('CLIENT') or hasRole('ADMIN')")
     public ResponseEntity<List<MeasurementDTO>> getMeasurements() {
         List<MeasurementDTO> dtos = measurementService.findMeasurements();
         for(MeasurementDTO dto : dtos) {
@@ -53,7 +65,8 @@ public class MeasurementController {
             @ApiResponse(code = 404, message = "Could not find any measurement with id: {id given as path variable}"),
             @ApiResponse(code = 400, message = "Getting measurement with given id failed.")
     })
-    @GetMapping(value = "/{id}")
+    @GetMapping("/measurement/{id}")
+    @PreAuthorize("hasRole('CLIENT') or hasRole('ADMIN')")
     public ResponseEntity<MeasurementDTO> getMeasurement(@PathVariable("id") UUID measurementId) {
         MeasurementDTO dto = measurementService.findMeasurementById(measurementId);
         return new ResponseEntity<>(dto, HttpStatus.OK);
@@ -65,7 +78,8 @@ public class MeasurementController {
             @ApiResponse(code = 404, message = "The measurement is not valid."),
             @ApiResponse(code = 400, message = "Inserting a new measurement failed.")
     })
-    @PostMapping("/save")
+    @PostMapping("/measurement")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UUID> insertMeasurement(@Valid @RequestBody MeasurementDTO measurementDTO) {
         UUID measurementId = measurementService.insert(measurementDTO);
         return new ResponseEntity<>(measurementId, HttpStatus.CREATED);
@@ -77,8 +91,9 @@ public class MeasurementController {
             @ApiResponse(code = 404, message = "Could not find any measurement with id: {id given as path variable}"),
             @ApiResponse(code = 400, message = "Updating measurement with given id failed.")
     })
-    @PutMapping("/update/{id}")
-    public ResponseEntity<MeasurementDTO> updateDevice(@PathVariable("id") UUID measurementId, @Valid @RequestBody MeasurementDTO measurementDTO) {
+    @PutMapping("/measurement/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<MeasurementDTO> updateMeasurement(@PathVariable("id") UUID measurementId, @Valid @RequestBody MeasurementDTO measurementDTO) {
         MeasurementDTO updated = measurementService.update(measurementId, measurementDTO);
         return new ResponseEntity<>(updated, HttpStatus.OK);
     }
@@ -89,9 +104,17 @@ public class MeasurementController {
             @ApiResponse(code = 404, message = "Could not find any measurement with id: {id given as path variable}"),
             @ApiResponse(code = 400, message = "Deleting measurement with given id failed.")
     })
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> deleteDevice(@PathVariable("id") UUID measurementId) {
+    @DeleteMapping("/measurement/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> deleteMeasurement(@PathVariable("id") UUID measurementId) {
         measurementService.delete(measurementId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @GetMapping("/history")
+    @PreAuthorize("hasRole('CLIENT') or hasRole('ADMIN')")
+    public ResponseEntity<List<MeasurementDTO>> getMeasurementsByDate(@RequestParam(value = "date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date date) throws ParseException {
+        List<MeasurementDTO> dtos = measurementService.findMeasurementsByTimestamp(date);
+        return new ResponseEntity<>(dtos, HttpStatus.OK);
     }
 }
