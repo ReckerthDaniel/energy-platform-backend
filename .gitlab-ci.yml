@@ -24,7 +24,7 @@ checkstyle:
   image: maven:3.8.3-jdk-11
   script:
     - echo "Checkstyle DEMO app"
-    - mvn checkstyle: check
+    - mvn checkstyle:check
 
 variables:
   DB_IP: ec2-54-74-60-70.eu-west-1.compute.amazonaws.com
@@ -35,7 +35,7 @@ variables:
 
 deploy:
   stage: deploy
-  image: ruby:2.4
+  image: ruby:3.0
   script:
     - apt-get update -qy
     - apt-get install -y ruby-dev
