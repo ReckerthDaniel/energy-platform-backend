@@ -42,4 +42,4 @@ deploy:
     - gem install dpl
     - dpl --provider=heroku --app=ds2021-energy-daniel-backend --api-key=$HEROKU_API_KEY
   only:
-    - production
+    - security_v2
