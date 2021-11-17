@@ -5,10 +5,10 @@
 
 
 <module name="Checker">
-    <module name="SuppressionFilter">
-        <property name="file" value="./checkstyle-supressions.xml" />
-        <property name="optional" value="false" />
-    </module>
+<!--    <module name="SuppressionFilter">-->
+<!--        <property name="file" value="./checkstyle-supressions.xml" />-->
+<!--        <property name="optional" value="false" />-->
+<!--    </module>-->
     <module name="TreeWalker">
         <module name="EmptyStatement">
             <property name="severity" value="error" />
