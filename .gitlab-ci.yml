@@ -2,6 +2,7 @@ stages:
   - build
   - test
   - checkstyle
+  - deploy
 
 build:
   stage: build
@@ -24,3 +25,21 @@ checkstyle:
   script:
     - echo "Checkstyle DEMO app"
     - mvn checkstyle:check
+
+variables:
+  DB_IP: ec2-54-74-60-70.eu-west-1.compute.amazonaws.com
+  DB_PORT: 5432
+  DB_USER: dvuisidxtsghbd
+  DB_PASSWORD: d4718329d17128e9c32d1c082dedefb6617190c9a87b812a8728bd548f49d388
+  DB_DBNAME: d11ljba3hvvpk6
+
+deploy:
+  stage: deploy
+  image: ruby:2.4
+  script:
+    - apt-get update -qy
+    - apt-get install -y ruby-dev
+    - gem install dpl
+    - dpl --provider=heroku --app=ds2021-energy-daniel-backend --api-key=$HEROKU_API_KEY
+  only:
+    - production
