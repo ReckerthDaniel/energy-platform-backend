@@ -10,6 +10,7 @@ import org.springframework.hateoas.RepresentationModel;
 import javax.validation.constraints.NotNull;
 import java.util.UUID;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

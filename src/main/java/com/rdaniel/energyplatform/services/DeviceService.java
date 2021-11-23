@@ -1,7 +1,6 @@
 package com.rdaniel.energyplatform.services;
 
 import com.rdaniel.energyplatform.common.handlers.exceptions.model.ResourceNotFoundException;
-import com.rdaniel.energyplatform.dtos.DeviceDTO;
 import com.rdaniel.energyplatform.dtos.DeviceDetailsDTO;
 import com.rdaniel.energyplatform.dtos.MeasurementDTO;
 import com.rdaniel.energyplatform.dtos.builders.DeviceBuilder;

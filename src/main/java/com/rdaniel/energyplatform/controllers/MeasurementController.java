@@ -1,17 +1,13 @@
 package com.rdaniel.energyplatform.controllers;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rdaniel.energyplatform.common.config.SwaggerConfig;
 import com.rdaniel.energyplatform.dtos.MeasurementDTO;
-import com.rdaniel.energyplatform.dtos.MeasurementInDTO;
 import com.rdaniel.energyplatform.entities.Measurement;
 import com.rdaniel.energyplatform.services.MeasurementService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import javassist.Loader;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -113,8 +109,8 @@ public class MeasurementController {
 
     @GetMapping("/history")
     @PreAuthorize("hasRole('CLIENT') or hasRole('ADMIN')")
-    public ResponseEntity<List<MeasurementDTO>> getMeasurementsByDate(@RequestParam(value = "date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date date) throws ParseException {
-        List<MeasurementDTO> dtos = measurementService.findMeasurementsByTimestamp(date);
+    public ResponseEntity<List<MeasurementDTO>> getMeasurementsByDate(@RequestParam(value = "device_id") UUID device_id, @RequestParam(value = "day") @DateTimeFormat(pattern = "dd-MM-yyyy") Date date) {
+        List<MeasurementDTO> dtos = measurementService.findMeasurementsByDeviceAndDate(device_id, date);
         return new ResponseEntity<>(dtos, HttpStatus.OK);
     }
 }

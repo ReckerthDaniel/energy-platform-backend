@@ -5,13 +5,12 @@ import com.rdaniel.energyplatform.dtos.MeasurementDTO;
 import com.rdaniel.energyplatform.dtos.builders.MeasurementBuilder;
 import com.rdaniel.energyplatform.entities.Measurement;
 import com.rdaniel.energyplatform.repositories.MeasurementRepository;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -21,6 +20,7 @@ import java.util.stream.Collectors;
 public class MeasurementService {
 
     private final MeasurementRepository measurementRepository;
+
 
     public List<MeasurementDTO> findMeasurements() {
         List<Measurement> measurements = measurementRepository.findAll();
@@ -68,22 +68,16 @@ public class MeasurementService {
         measurementRepository.deleteById(id);
     }
 
-    public List<MeasurementDTO> findMeasurementsByTimestamp(Date givenDate) throws ParseException {
-        Calendar calendar1 = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        Calendar calendar2 = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        calendar1.setTime(givenDate);
-
-        List<Measurement> measurements = measurementRepository.findAll();
+    public List<MeasurementDTO> findMeasurementsByDeviceAndDate(UUID deviceId, Date givenDate) {
+        List<Measurement> measurementsByDevice = measurementRepository.findMeasurementsByDevice_Id(deviceId);
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
         List<MeasurementDTO> measurementDTOS = new ArrayList<>();
-        for(Measurement measurement: measurements) {
-            calendar2.setTime(measurement.getTimestamp());
-            if((calendar2.get(Calendar.YEAR) == calendar1.get(Calendar.YEAR)) && (calendar2.get(Calendar.DAY_OF_YEAR) == calendar1.get(Calendar.DAY_OF_YEAR))) {
-                measurementDTOS.add(MeasurementBuilder.toMeasurementDTO(measurement));
+        for(Measurement m : measurementsByDevice) {
+            if(sdf.format(m.getTimestamp()).equals(sdf.format(givenDate))) {
+                measurementDTOS.add(MeasurementBuilder.toMeasurementDTO(m));
             }
         }
-
         measurementDTOS.sort(Comparator.comparing(MeasurementDTO::getTimestamp));
-
         return measurementDTOS;
     }
 }

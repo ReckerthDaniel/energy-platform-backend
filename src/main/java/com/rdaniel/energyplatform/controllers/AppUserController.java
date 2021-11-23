@@ -1,7 +1,6 @@
 package com.rdaniel.energyplatform.controllers;
 
 import com.rdaniel.energyplatform.common.config.SwaggerConfig;
-import com.rdaniel.energyplatform.dtos.AppUserDTO;
 import com.rdaniel.energyplatform.dtos.AppUserDetailsDTO;
 import com.rdaniel.energyplatform.dtos.DeviceDetailsDTO;
 import com.rdaniel.energyplatform.entities.AppUser;

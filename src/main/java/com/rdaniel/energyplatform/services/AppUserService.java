@@ -1,7 +1,6 @@
 package com.rdaniel.energyplatform.services;
 
 import com.rdaniel.energyplatform.common.handlers.exceptions.model.ResourceNotFoundException;
-import com.rdaniel.energyplatform.dtos.AppUserDTO;
 import com.rdaniel.energyplatform.dtos.AppUserDetailsDTO;
 import com.rdaniel.energyplatform.dtos.DeviceDetailsDTO;
 import com.rdaniel.energyplatform.dtos.builders.AppUserBuilder;
@@ -12,6 +11,7 @@ import com.rdaniel.energyplatform.repositories.AppUserRepository;
 import com.rdaniel.energyplatform.repositories.DeviceRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -24,6 +24,7 @@ public class AppUserService {
 
     private final AppUserRepository appUserRepository;
     private final DeviceRepository deviceRepository;
+    private PasswordEncoder passwordEncoder;
 
     public List<AppUserDetailsDTO> findAppUsers() {
         List<AppUser> users = appUserRepository.findAll();
@@ -52,6 +53,7 @@ public class AppUserService {
 
     public UUID insert(AppUserDetailsDTO appUserDetailsDTO) {
         AppUser user = AppUserBuilder.toEntity(appUserDetailsDTO);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         user = appUserRepository.save(user);
         log.debug("User with id {} was inserted in DB", user.getId());
         return user.getId();

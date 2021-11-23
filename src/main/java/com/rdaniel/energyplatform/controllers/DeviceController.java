@@ -2,7 +2,6 @@ package com.rdaniel.energyplatform.controllers;
 
 
 import com.rdaniel.energyplatform.common.config.SwaggerConfig;
-import com.rdaniel.energyplatform.dtos.DeviceDTO;
 import com.rdaniel.energyplatform.dtos.DeviceDetailsDTO;
 import com.rdaniel.energyplatform.dtos.MeasurementDTO;
 import com.rdaniel.energyplatform.entities.Device;
