@@ -5,13 +5,13 @@ import com.rdaniel.energyplatform.dtos.MeasurementDTO;
 import com.rdaniel.energyplatform.dtos.builders.MeasurementBuilder;
 import com.rdaniel.energyplatform.entities.Measurement;
 import com.rdaniel.energyplatform.repositories.MeasurementRepository;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 public class MeasurementService {
 
     private final MeasurementRepository measurementRepository;
+
 
     public List<MeasurementDTO> findMeasurements() {
         List<Measurement> measurements = measurementRepository.findAll();
@@ -65,5 +66,18 @@ public class MeasurementService {
             throw new ResourceNotFoundException(Measurement.class.getSimpleName() + "with id: " + id);
         }
         measurementRepository.deleteById(id);
+    }
+
+    public List<MeasurementDTO> findMeasurementsByDeviceAndDate(UUID deviceId, Date givenDate) {
+        List<Measurement> measurementsByDevice = measurementRepository.findMeasurementsByDevice_Id(deviceId);
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+        List<MeasurementDTO> measurementDTOS = new ArrayList<>();
+        for(Measurement m : measurementsByDevice) {
+            if(sdf.format(m.getTimestamp()).equals(sdf.format(givenDate))) {
+                measurementDTOS.add(MeasurementBuilder.toMeasurementDTO(m));
+            }
+        }
+        measurementDTOS.sort(Comparator.comparing(MeasurementDTO::getTimestamp));
+        return measurementDTOS;
     }
 }

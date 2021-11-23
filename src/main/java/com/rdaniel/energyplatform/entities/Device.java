@@ -27,6 +27,7 @@ public class Device implements Serializable {
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
     @Type(type = "uuid-binary")
+    @Column(name = "id")
     @ApiModelProperty(notes = "Unique id (UUID) for user", example = "45774962-e6f7-41f6-b940-72ef63fa1943", position = 0)
     private UUID id;
 

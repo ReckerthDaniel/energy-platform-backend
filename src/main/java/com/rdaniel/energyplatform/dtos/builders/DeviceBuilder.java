@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 public class DeviceBuilder {
 
     public static DeviceDTO toDeviceDTO(Device device) {
-        return new DeviceDTO(device.getId(), device.getLocationAddress(), device.getMaxEnergyConsumption());
+        return new DeviceDTO(device.getId(), device.getDeviceDescription(), device.getLocationAddress(), device.getBaselineEnergyConsumption(), device.getUser());
     }
 
     public static DeviceDetailsDTO toDeviceDetailsDTO(Device device) {

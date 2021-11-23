@@ -1,15 +1,19 @@
 package com.rdaniel.energyplatform.services;
 
 import com.rdaniel.energyplatform.common.handlers.exceptions.model.ResourceNotFoundException;
-import com.rdaniel.energyplatform.dtos.DeviceDTO;
 import com.rdaniel.energyplatform.dtos.DeviceDetailsDTO;
+import com.rdaniel.energyplatform.dtos.MeasurementDTO;
 import com.rdaniel.energyplatform.dtos.builders.DeviceBuilder;
+import com.rdaniel.energyplatform.dtos.builders.MeasurementBuilder;
 import com.rdaniel.energyplatform.entities.Device;
+import com.rdaniel.energyplatform.entities.Measurement;
 import com.rdaniel.energyplatform.repositories.DeviceRepository;
+import com.rdaniel.energyplatform.repositories.MeasurementRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -21,11 +25,12 @@ import java.util.stream.Collectors;
 public class DeviceService {
 
     private final DeviceRepository deviceRepository;
+    private final MeasurementRepository measurementRepository;
 
-    public List<DeviceDTO> findDevices() {
+    public List<DeviceDetailsDTO> findDevices() {
         List<Device> devices = deviceRepository.findAll();
         return devices.stream()
-                .map(DeviceBuilder::toDeviceDTO)
+                .map(DeviceBuilder::toDeviceDetailsDTO)
                 .collect(Collectors.toList());
     }
 
@@ -70,5 +75,26 @@ public class DeviceService {
             throw new ResourceNotFoundException(Device.class.getSimpleName() + "with id: " + id);
         }
         deviceRepository.deleteById(id);
+    }
+
+    public List<MeasurementDTO> findDeviceMeasurements(UUID id) {
+        Optional<Device> deviceOptional = deviceRepository.findById(id);
+        if(deviceOptional.isEmpty()) {
+            log.error("Device with id {} not found in DB.", id);
+            throw new ResourceNotFoundException(Device.class.getSimpleName() + "with id: " + id);
+        }
+        Device device = deviceOptional.get();
+
+        List<Measurement> measurements = measurementRepository.findAll();
+        List<Measurement> deviceMeasurements = new ArrayList<>();
+        for(Measurement measurement: measurements) {
+            if(measurement.getDevice().equals(device)) {
+                deviceMeasurements.add(measurement);
+            }
+        }
+
+        return deviceMeasurements.stream()
+                .map(MeasurementBuilder::toMeasurementDTO)
+                .collect(Collectors.toList());
     }
 }

@@ -20,6 +20,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @ApiModel(description = "Class representing a measurement")
+@Table(name = "measurement")
 public class Measurement implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -28,7 +29,7 @@ public class Measurement implements Serializable {
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
     @Type(type = "uuid-binary")
-    @ApiModelProperty(notes = "Unique id (UUID) for user", example = "45774962-e6f7-41f6-b940-72ef63fa1943", position = 0)
+    @ApiModelProperty(notes = "Unique id (UUID) for user", example = "45774962-e6f7-41f6-b940-72ef63fa1943")
     private UUID id;
 
     @Column(name = "EC")
@@ -41,7 +42,7 @@ public class Measurement implements Serializable {
 
     @ManyToOne
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "device_id")
+    @JoinColumn(name = "device_id", referencedColumnName = "id")
     @ApiModelProperty(notes = "The device having this measurement", required = true, position = 3)
     private Device device;
 
