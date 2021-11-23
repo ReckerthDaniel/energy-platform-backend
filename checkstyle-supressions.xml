@@ -1,2 +1,0 @@
-<!-- disable checks against lombok annotations -->
-<suppress-xpath checks="HideUtilityClassConstructor" query="//CLASS_DEF[.//ANNOTATION/IDENT[@text='UtilityClass']]"/>
