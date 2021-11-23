@@ -23,9 +23,17 @@ public class RoleConverter implements AttributeConverter<Role, String> {
             return null;
         }
 
-        return Stream.of(Role.values())
-                .filter(c -> c.getLabel().equals(roleLabel))
-                .findFirst()
-                .orElseThrow(IllegalArgumentException::new);
+        Role[] roles = Role.values();
+        for(Role role: roles) {
+            if(role.getLabel().equals(roleLabel)) {
+                return role;
+            }
+        }
+
+        return null;
+//        return Stream.of(Role.values())
+//                .filter(c -> c.getLabel().equals(roleLabel))
+//                .findFirst()
+//                .orElseThrow();
     }
 }
