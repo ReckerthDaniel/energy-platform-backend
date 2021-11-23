@@ -19,21 +19,21 @@ public class RoleConverter implements AttributeConverter<Role, String> {
     }
 
     public Role convertToEntityAttribute(String roleLabel) {
+        System.out.println("role " + roleLabel);
         if(roleLabel == null) {
             return null;
         }
 
-        Role[] roles = Role.values();
-        for(Role role: roles) {
-            if(role.getLabel().equals(roleLabel)) {
-                return role;
-            }
-        }
+//        Role[] roles = Role.values();
+//        for(Role role: roles) {
+//            if(role.getLabel().equals(roleLabel)) {
+//                return role;
+//            }
+//        }
 
-        return null;
-//        return Stream.of(Role.values())
-//                .filter(c -> c.getLabel().equals(roleLabel))
-//                .findFirst()
-//                .orElseThrow();
+        return Stream.of(Role.values())
+                .filter(c -> c.getLabel().equals(roleLabel))
+                .findFirst()
+                .orElse(null);
     }
 }
