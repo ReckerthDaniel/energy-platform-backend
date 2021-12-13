@@ -38,6 +38,12 @@ public class MeasurementService {
         return MeasurementBuilder.toMeasurementDTO(measurementOptional.get());
     }
 
+    public MeasurementDTO findLatestMeasurement() {
+        List<Measurement> measurements = measurementRepository.findAll();
+        measurements.sort(Comparator.comparing(Measurement::getTimestamp).reversed());
+        return MeasurementBuilder.toMeasurementDTO(measurements.get(0));
+    }
+
     public UUID insert(MeasurementDTO measurementDTO) {
         Measurement measurement = MeasurementBuilder.toEntity(measurementDTO);
         measurement = measurementRepository.save(measurement);

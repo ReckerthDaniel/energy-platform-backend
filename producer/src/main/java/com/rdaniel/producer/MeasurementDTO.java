@@ -1,24 +1,19 @@
-package com.rdaniel.energyplatform.dtos;
+package com.rdaniel.producer;
 
-import com.rdaniel.energyplatform.entities.Device;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.springframework.hateoas.RepresentationModel;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
-import java.util.UUID;
 
-@Data
-@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@NoArgsConstructor
+
 @AllArgsConstructor
-public class MeasurementDTO extends RepresentationModel<MeasurementDTO> implements Serializable {
-
-    private UUID id;
+@NoArgsConstructor
+@Data
+public class MeasurementDTO implements Serializable {
 
     @EqualsAndHashCode.Include
     @NotNull
@@ -29,4 +24,5 @@ public class MeasurementDTO extends RepresentationModel<MeasurementDTO> implemen
     private Date timestamp;
 
     private Device device;
+
 }

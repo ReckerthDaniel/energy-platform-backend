@@ -25,7 +25,6 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping(value = "/api")
-@PreAuthorize("hasRole('ADMIN') or hasRole('CLIENT')")
 @RequiredArgsConstructor
 @Slf4j
 @Api(tags = SwaggerConfig.APP_USER_TAG)
