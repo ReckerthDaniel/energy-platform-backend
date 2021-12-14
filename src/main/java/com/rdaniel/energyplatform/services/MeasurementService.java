@@ -38,8 +38,8 @@ public class MeasurementService {
         return MeasurementBuilder.toMeasurementDTO(measurementOptional.get());
     }
 
-    public MeasurementDTO findLatestMeasurement() {
-        List<Measurement> measurements = measurementRepository.findAll();
+    public MeasurementDTO findLatestMeasurement(UUID id) {
+        List<Measurement> measurements = measurementRepository.findMeasurementsByDevice_Id(id);
         measurements.sort(Comparator.comparing(Measurement::getTimestamp).reversed());
         return MeasurementBuilder.toMeasurementDTO(measurements.get(0));
     }
